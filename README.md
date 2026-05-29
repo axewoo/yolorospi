@@ -3,26 +3,28 @@
 Voici la structure complète de votre espace de travail ROS 2 (~/ros2_hailo_ws) incluant les fichiers créés et modifiés :
 Plaintext
 
-~/ros2_hailo_ws/
-├── src/
-│   └── hailo_person_detection/
-│       ├── package.xml                 # Déclaration des dépendances (rclpy, sensor_msgs, etc.)
-│       ├── setup.py                    # Configuration du package et point d'entrée de l'exécutable
-│       ├── setup.cfg                   # Fichier de configuration standard pour Python sous ROS 2
-│       ├── launch/
-│       │   └── hailo_launch.py         # [Optionnel/Suggéré] Script de lancement avec reconnexion automatique (respawn)
-│       └── hailo_person_detection/
-│           ├── __init__.py
-│           └── hailo_inference.py      # Code principal : Capture ROS 2, Inférence Hailo-8 et dessin OpenCV
-└── home/
-    └── raspespion/
-        └── yolov8n.hef                 # Le modèle YOLOv8n compilé pour le hardware Hailo
+## Structure du Projet
+
+```text
+ros2_hailo_ws/
+└── src/
+    └── hailo_person_detection/
+        ├── package.xml                 # Déclaration des dépendances ROS 2 (rclpy, sensor_msgs...)
+        ├── setup.py                    # Configuration du package et points d'entrée des exécutables
+        ├── setup.cfg                   # Configuration standard d'installation Python pour ROS 2
+        ├── launch/
+        │   └── hailo_launch.py         # Script de lancement avec gestion du crash de la caméra (respawn)
+        ├── models/
+        │   └── yolov8n.hef             # Le modèle YOLOv8n compilé pour le hardware Hailo-8
+        └── hailo_person_detection/
+            ├── __init__.py
+            └── hailo_inference.py      # Nœud principal (Inférence Hailo-8 + Traitement NMS + Affichage OpenCV)
 
 Rôle des fichiers clés :
 
-    hailo_inference.py : C'est le cœur applicatif. Il s'abonne au flux de la caméra, convertit les images compressées, les formate pour YOLOv8, pilote l'accélérateur matériel Hailo-8, décode le post-processing NMS natif de la puce, dessine les boîtes de détection et publie le flux annoté.
-
-    hailo_launch.py : Permet de lancer simultanément le driver de la caméra et le nœud Hailo. Il intègre la sécurité de redémarrage automatique en cas de défaillance matérielle.
+* **`hailo_inference.py`** : C'est le cœur applicatif. Ce nœud ROS 2 s'abonne au topic de la caméra (`/camera/image/compressed`), convertit l'image, exécute l'inférence sur la puce Hailo-8, décode le tenseur NMS natif, dessine les boîtes de détection via OpenCV et republie l'image annotée.
+* **`hailo_launch.py`** : Permet de lancer simultanément le driver de votre caméra et le nœud d'inférence Hailo. Il intègre une sécurité `respawn=True` pour reconnecter automatiquement la caméra en cas de coupure ou de surchauffe matérielle.
+* **`yolov8n.hef`** : Le fichier du modèle YOLOv8n converti et optimisé spécifiquement pour l'architecture du processeur Hailo.
 
 ## 2. Les Pièges Rencontrés et Résolutions (R RETEX / Post-Mortem)
 
