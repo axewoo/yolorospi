@@ -27,6 +27,7 @@ Rôle des fichiers clés :
 ## 2. Les Pièges Rencontrés et Résolutions (R RETEX / Post-Mortem)
 
 Au cours du développement, nous avons fait face à 4 pièges techniques majeurs (logiciels et matériels). Voici leur documentation pour éviter qu'ils ne se reproduisent :
+
 🧠 Piège 1 : Confusion de syntaxe dans l'API Hailo (Médiatisation des types)
 
     Le Problème : Erreurs d'importation et de crashs au démarrage à cause d'une confusion entre les classes de configuration (InputVStreamParams) et les variables d'instance créées par le script.
