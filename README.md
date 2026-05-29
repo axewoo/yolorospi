@@ -1,25 +1,20 @@
 ## 1. Arborescence des Fichiers du Projet
 
-Voici la structure complète de votre espace de travail ROS 2 (~/ros2_hailo_ws) incluant les fichiers créés et modifiés :
-Plaintext
-
-## Structure du Projet
-
 ```text
-ros2_hailo_ws/
-└── src/
-    └── hailo_person_detection/
-        ├── package.xml                 # Déclaration des dépendances ROS 2 (rclpy, sensor_msgs...)
-        ├── setup.py                    # Configuration du package et points d'entrée des exécutables
-        ├── setup.cfg                   # Configuration standard d'installation Python pour ROS 2
-        ├── launch/
-        │   └── hailo_launch.py         # Script de lancement avec gestion du crash de la caméra (respawn)
-        ├── models/
-        │   └── yolov8n.hef             # Le modèle YOLOv8n compilé pour le hardware Hailo-8
+home/
+└── ros2_hailo_ws/
+    └── src/
         └── hailo_person_detection/
-            ├── __init__.py
-            └── hailo_inference.py      # Nœud principal (Inférence Hailo-8 + Traitement NMS + Affichage OpenCV)
-
+            ├── package.xml                 # Déclaration des dépendances ROS 2 (rclpy, sensor_msgs...)
+            ├── setup.py                    # Configuration du package et points d'entrée des exécutables
+            ├── setup.cfg                   # Configuration standard d'installation Python pour ROS 2
+            ├── launch/
+            │   └── hailo_launch.py         # Script de lancement avec gestion du crash de la caméra (respawn)
+            └── hailo_person_detection/
+                ├── __init__.py
+                └── hailo_inference.py      # Nœud principal (Inférence Hailo-8 + Traitement NMS + Affichage OpenCV)
+└── yolov8n.hef             # Le modèle YOLOv8n compilé pour le hardware Hailo-8
+```
 Rôle des fichiers clés :
 
 * **`hailo_inference.py`** : C'est le cœur applicatif. Ce nœud ROS 2 s'abonne au topic de la caméra (`/camera/image/compressed`), convertit l'image, exécute l'inférence sur la puce Hailo-8, décode le tenseur NMS natif, dessine les boîtes de détection via OpenCV et republie l'image annotée.
