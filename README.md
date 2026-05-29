@@ -60,3 +60,18 @@ Au cours du développement, nous avons fait face à 4 pièges techniques majeurs
     La Solution : 1.  Matérielle : Ajout/vérification d'un dissipateur thermique (radiateur alu) sur le SoC SSC335 et fiabilisation de l'alimentation 12V.
     2.  Configuration : Allègement de la charge de la caméra en baissant le Framerate à 15 FPS (amplement suffisant pour l'inférence) et réduction du Bitrate.
     3.  Logicielle (Tolérance aux pannes) : Configuration du nœud driver dans le fichier Launch avec l'argument respawn=True et respawn_delay=2.0. Si la caméra sature et redémarre, ROS 2 ressuscite le pilote automatiquement en tâche de fond dès que la caméra est de nouveau accessible.
+
+## Configuration Matérielle (Hardware)
+
+L'architecture de ce projet repose sur une chaîne d'acquisition et de traitement embarquée performante, conçue pour minimiser la latence tout en garantissant une grande fiabilité industrielle :
+
+* **Calculateur Principal - Raspberry Pi 5 :** Le cœur informatique du système, chargé d'exécuter l'environnement ROS 2, de gérer l'acquisition des flux vidéo compressés et d'orchestrer la communication entre les différents nœuds.
+* **Accélérateur IA - Raspberry Pi AI HAT (Hailo-8, 26 TOPS) :** Connecté via l'interface PCIe du Raspberry Pi 5, ce module dédié à l'intelligence artificielle déploie une puissance de calcul de 26 TOPS (Tera Operations Per Second). C'est lui qui prend en charge l'inférence et le post-processing (NMS) en temps réel du modèle YOLOv8n, libérant ainsi totalement le processeur principal.
+* **Switch Réseau & Alimentation - Brainboxes PE-515 :** Un commutateur Ethernet industriel PoE (Power over Ethernet) non managé à 5 ports. Il assure à la fois la transmission ultra-rapide des paquets réseau et l'alimentation électrique stable et sécurisée de la caméra IP directement via le câble RJ45.
+* **Capteur de Vision - Caméra IMX307 + MStar SSC335 :** Une caméra IP équipée du capteur Sony Starvis IMX307 (reconnu pour ses performances exceptionnelles en basse luminosité) associé au processeur SigmaStar SSC335. Configurée de manière optimale à 15 FPS avec un dissipateur thermique pour éviter tout emballement thermique, elle capture et diffuse le flux vidéo traité ensuite par notre pipeline.
+
+---
+
+## Inspiration et Crédits
+
+Ce projet s'appuie de manière significative sur les concepts et l'architecture du projet open-source **`yoloros`**. Ce dépôt a constitué une base de référence technique indispensable pour comprendre l'intégration des modèles de la famille YOLO au sein de l'écosystème de communication de ROS 2. En s'inspirant de sa logique de nœuds et de la manipulation des types de messages d'images (`sensor_msgs`), nous avons pu concevoir un pont robuste et réactif entre le flux compressé de la caméra industrielle et les capacités de détection d'objets en direct de la puce Hailo-8.
